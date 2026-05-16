@@ -190,3 +190,36 @@
 - 搭建 Streamlit 前端页面
 - 支持页面上传 / 输入文档内容
 - 支持页面提问、展示答案、引用和来源片段
+
+## 第 7 轮：Streamlit 前端演示页面
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 搭建可视化前端页面
+- 支持在页面中输入文档并入库
+- 支持在页面中提问
+- 展示答案、引用和来源片段
+
+完成内容：
+
+- 新增 `web/app.py`，实现 Streamlit 页面
+- 新增 `web/helpers.py`，封装前端文档 payload 构建和来源格式化
+- 页面侧边栏支持输入文件名和文档内容并执行入库
+- 页面主区域支持输入问题并展示答案
+- 页面支持展示 citation 和来源 chunk
+- 新增 `tests/test_streamlit_helpers.py`，覆盖前端辅助逻辑
+- 更新 `requirements.txt`，加入 `streamlit`
+- 更新 README，加入 `streamlit run web/app.py` 启动命令
+
+验证结果：
+
+- `python -m pytest`：21 个测试通过
+- 本地当前未安装 Streamlit，未启动页面；安装依赖后可运行 `streamlit run web/app.py`
+
+下一轮计划：
+
+- 增加评估数据集和评估脚本
+- 统计回答是否命中参考答案关键词
+- 输出简单评估报告，为 RAGAS 接入打基础
