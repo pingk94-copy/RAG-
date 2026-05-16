@@ -124,3 +124,36 @@
 - 增加 Rerank 精排层
 - 设计统一 AnswerGenerator
 - 优化引用来源展示和无依据拒答阈值
+
+## 第 5 轮：Rerank 精排、引用来源与拒答
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 在混合召回后增加精排层
+- 统一答案生成出口
+- 输出可读引用来源
+- 增加低置信上下文拒答
+
+完成内容：
+
+- 新增 `rag/reranker.py`，实现 `SimpleReranker`
+- 新增 `rag/answer_generator.py`，实现 `AnswerGenerator`
+- `SimpleReranker` 基于问题与候选片段 token overlap 进行二次排序
+- `AnswerGenerator` 支持按最低分阈值拒答
+- `AnswerGenerator` 支持输出 citation：文档名、页码、标题、chunk id
+- 更新 `ask.py`，完整链路变为 `Hybrid Retrieve -> Rerank -> Generate Answer`
+- 新增 `tests/test_answer_generation.py`，覆盖精排、引用和低置信拒答
+
+验证结果：
+
+- `python -m pytest`：16 个测试通过
+- `python .\ask.py "系统支持上传什么？"`：成功返回答案、引用和 rerank 分数
+- `python .\ask.py "今天西安天气怎么样？"`：成功拒答
+
+下一轮计划：
+
+- 搭建 FastAPI 服务
+- 提供 `/ingest` 和 `/ask` 接口
+- 为后续 Streamlit 前端准备稳定 API

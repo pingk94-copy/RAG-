@@ -1,6 +1,6 @@
 # RAG 智能问答
 
-这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 4 轮：加入 BM25 关键词检索，并用 RRF 融合向量检索与关键词检索结果。
+这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 5 轮：在混合检索后加入 Rerank 精排、引用来源和低置信拒答。
 
 ## 当前能力
 
@@ -13,6 +13,9 @@
 - 支持 BM25 关键词检索
 - 支持向量检索 + BM25 的混合召回
 - 支持 RRF 融合排序
+- 支持轻量 Rerank 精排
+- 支持引用来源输出
+- 支持低置信上下文拒答
 - 支持返回答案和来源 chunk
 - 当没有检索到依据时拒答
 
@@ -26,4 +29,4 @@ python .\ask.py "系统支持上传什么？"
 
 ## 迭代方向
 
-后续会逐步加入 Qdrant、Rerank、FastAPI、Streamlit、RAGAS 和 LangGraph。
+后续会逐步加入 Qdrant、FastAPI、Streamlit、RAGAS 和 LangGraph。

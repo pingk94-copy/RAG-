@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from rag.answer_generator import AnswerGenerator
 from rag.embeddings import HashingEmbeddingModel
 from rag.hybrid_retriever import HybridRetriever
 from rag.ingest import build_chunks, load_documents
 from rag.keyword_retriever import BM25Retriever
+from rag.reranker import SimpleReranker
 from rag.vector_store import InMemoryVectorStore
 
 
@@ -29,20 +31,25 @@ def main() -> None:
         keyword_retriever=BM25Retriever(),
     )
     retriever.add(chunks)
-    results = retriever.search(args.question, top_k=3)
+    retrieved = retriever.search(args.question, top_k=5)
+    reranked = SimpleReranker().rerank(args.question, retrieved, top_k=3)
+    answer = AnswerGenerator().generate(args.question, reranked)
 
-    if not results:
-        print("资料中没有找到明确依据。")
-    else:
-        print(results[0].chunk.content)
-        print("\nSources:")
-        for result in results:
+    print(answer.answer)
+    if answer.citations:
+        print("\nCitations:")
+        for citation in answer.citations:
+            print(f"- {citation}")
+
+    if reranked:
+        print("\nRetrieved:")
+        for result in reranked:
             source = result.chunk
-            heading = f" heading={source.heading}" if source.heading else ""
             paths = ",".join(result.sources)
             print(
                 f"- {source.document_name}#chunk-{source.chunk_id} "
-                f"page={source.page_number}{heading} via={paths} rrf={result.score:.4f}"
+                f"page={source.page_number} via={paths} "
+                f"rerank={result.rerank_score:.4f}"
             )
 
 
