@@ -1,6 +1,6 @@
 # RAG 智能问答
 
-这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 8 轮：新增评估数据集和评估脚本，形成基础质量评估闭环。
+这是一个按多轮迭代建设的 RAG 学习项目。当前处于第 9 轮：新增可配置 embedding 工厂和 Qdrant 向量库适配层。
 
 ## 当前能力
 
@@ -10,6 +10,7 @@
 - 支持为 chunk 保留文件名、文档类型、页码、标题等 metadata
 - 支持本地 hashing embedding
 - 支持内存向量索引和余弦相似度检索
+- 支持 Qdrant 向量库适配层
 - 支持 BM25 关键词检索
 - 支持向量检索 + BM25 的混合召回
 - 支持 RRF 融合排序
@@ -31,6 +32,29 @@ python .\ask.py "系统支持上传什么？"
 uvicorn app.main:app --reload
 streamlit run web/app.py
 python .\eval\evaluate.py --dataset eval/eval_dataset.json
+```
+
+## Qdrant 适配
+
+默认仍使用内存向量库，便于本地学习和测试。需要接入 Qdrant 时，先启动 Qdrant 服务并安装依赖：
+
+```powershell
+pip install -r requirements.txt
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+代码中可通过 `RAGService` 传入配置：
+
+```python
+service = RAGService(
+    embedding_config={"provider": "hashing", "dimensions": 256},
+    vector_store_config={
+        "provider": "qdrant",
+        "url": "http://localhost:6333",
+        "collection": "rag_chunks",
+        "vector_size": 256,
+    },
+)
 ```
 
 ## 当前评估指标

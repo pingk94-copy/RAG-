@@ -260,3 +260,35 @@
   - 增加安全校验
   - 接入真实 embedding / Qdrant
   - 扩展评估集并接入 RAGAS
+
+## 第 9 轮：Embedding 工厂与 Qdrant 适配层
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 增加可配置 embedding 创建入口
+- 增加 Qdrant 向量库适配层
+- 保持默认内存向量库可测试、可运行
+- 为后续真实 embedding / Qdrant 服务接入打好边界
+
+完成内容：
+
+- 更新 `rag/embeddings.py`，新增 `create_embedding_model`
+- 新增 `rag/qdrant_store.py`，实现 `QdrantVectorStore`
+- `QdrantVectorStore` 支持 collection 配置、向量写入、向量搜索和清空
+- 更新 `rag/service.py`，支持 `embedding_config` 和 `vector_store_config`
+- 默认配置仍为 hashing embedding + memory vector store
+- 新增 `tests/test_vector_backend.py`，覆盖 embedding 工厂、Qdrant 依赖提示和服务配置
+- 更新 README，加入 Qdrant 启动和配置示例
+- 更新 `requirements.txt`，加入 `qdrant-client`
+
+验证结果：
+
+- `python -m pytest`：26 个测试通过
+
+下一轮计划：
+
+- 增加安全校验模块
+- 识别无关问题、提示词注入和危险链接
+- 在答案生成前加入安全拒答

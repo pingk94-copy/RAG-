@@ -32,6 +32,15 @@ class HashingEmbeddingModel:
         return _normalize(vector)
 
 
+def create_embedding_model(config: dict[str, object] | None = None) -> EmbeddingModel:
+    settings = config or {}
+    provider = str(settings.get("provider", "hashing")).lower()
+    if provider == "hashing":
+        dimensions = int(settings.get("dimensions", 256))
+        return HashingEmbeddingModel(dimensions=dimensions)
+    raise ValueError(f"Unsupported embedding provider: {provider}")
+
+
 def _tokenize(text: str) -> list[str]:
     raw_tokens = re.findall(r"[A-Za-z0-9_]+|[\u4e00-\u9fff]+", text.lower())
     tokens: list[str] = []
