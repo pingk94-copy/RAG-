@@ -3,8 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from rag.embeddings import HashingEmbeddingModel
 from rag.ingest import build_chunks, load_documents
-from rag.simple_rag import SimpleRAG
+from rag.vector_rag import VectorRAG
+from rag.vector_store import InMemoryVectorStore
 
 
 def main() -> None:
@@ -21,15 +23,20 @@ def main() -> None:
     documents = load_documents(docs_dir)
     chunks = build_chunks(documents)
 
-    rag = SimpleRAG()
-    rag.add_chunks(chunks)
+    vector_store = InMemoryVectorStore(HashingEmbeddingModel())
+    vector_store.add(chunks)
+    rag = VectorRAG(vector_store)
 
     result = rag.ask(args.question)
     print(result.answer)
     if result.sources:
         print("\nSources:")
         for source in result.sources:
-            print(f"- {source.document_name}#chunk-{source.chunk_id} score={source.score:.2f}")
+            heading = f" heading={source.heading}" if source.heading else ""
+            print(
+                f"- {source.document_name}#chunk-{source.chunk_id} "
+                f"page={source.page_number}{heading}"
+            )
 
 
 if __name__ == "__main__":

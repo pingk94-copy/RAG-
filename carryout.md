@@ -62,3 +62,35 @@
 - 引入向量表示和持久化检索层
 - 设计可替换的 embedding 接口
 - 初步接入 Qdrant 或先实现本地向量索引适配层
+
+## 第 3 轮：Embedding 接口与本地向量检索
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 引入向量表示能力
+- 设计可替换的 embedding 接口
+- 实现本地向量索引适配层
+- 将命令行问答切换到向量检索链路
+
+完成内容：
+
+- 新增 `rag/embeddings.py`，定义 `EmbeddingModel` 协议和 `HashingEmbeddingModel`
+- `HashingEmbeddingModel` 使用稳定 hash 生成本地向量，方便无 API Key 环境运行
+- 新增 `rag/vector_store.py`，实现 `InMemoryVectorStore` 和余弦相似度检索
+- 新增 `rag/vector_rag.py`，封装基于向量检索的问答流程
+- 更新 `ask.py`，从关键词重叠检索切换为本地向量检索
+- 新增 `tests/test_vector_store.py`，覆盖 embedding 稳定性、向量检索、清空索引和向量问答
+
+验证结果：
+
+- `python -m pytest`：10 个测试通过
+- `python .\ingest.py --chunk-size 50 --overlap 10`：成功解析样例文档并生成 chunk
+- `python .\ask.py "系统支持上传什么？"`：成功通过向量检索返回答案和来源
+
+下一轮计划：
+
+- 引入 BM25 关键词检索
+- 实现向量检索 + BM25 的混合召回
+- 使用 RRF 融合两路检索结果
