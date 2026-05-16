@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from rag.ingest import KnowledgeChunk
+from rag.llm import LLMClient
 from rag.reranker import RerankedResult
 
 
@@ -16,9 +17,15 @@ class GeneratedAnswer:
 class AnswerGenerator:
     """Extractive answer generator used before wiring in an LLM."""
 
-    def __init__(self, min_score: float = 0.05, max_sources: int = 3) -> None:
+    def __init__(
+        self,
+        min_score: float = 0.05,
+        max_sources: int = 3,
+        llm_client: LLMClient | None = None,
+    ) -> None:
         self.min_score = min_score
         self.max_sources = max_sources
+        self.llm_client = llm_client
 
     def generate(self, question: str, contexts: list[RerankedResult]) -> GeneratedAnswer:
         relevant = [context for context in contexts if context.rerank_score >= self.min_score]
@@ -26,9 +33,15 @@ class AnswerGenerator:
             return GeneratedAnswer(answer="资料中没有找到明确依据。", citations=[], sources=[])
 
         selected = relevant[: self.max_sources]
-        answer = selected[0].chunk.content
         sources = [context.chunk for context in selected]
         citations = [_format_citation(source) for source in sources]
+        if self.llm_client is not None:
+            answer = self.llm_client.generate_answer(
+                question,
+                [source.content for source in sources],
+            )
+        else:
+            answer = selected[0].chunk.content
 
         return GeneratedAnswer(answer=answer, citations=citations, sources=sources)
 

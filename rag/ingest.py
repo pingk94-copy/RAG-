@@ -17,13 +17,17 @@ class KnowledgeChunk:
     content: str
 
 
-def load_documents(directory: str | Path) -> list[LoadedDocument]:
+def load_documents(directory: str | Path, strict: bool = False) -> list[LoadedDocument]:
     docs_dir = Path(directory)
     supported = {".txt", ".md", ".pdf"}
     documents: list[LoadedDocument] = []
     for path in sorted(docs_dir.glob("*")):
         if path.is_file() and path.suffix.lower() in supported:
-            documents.append(load_document(path))
+            try:
+                documents.append(load_document(path))
+            except Exception:
+                if strict:
+                    raise
     return documents
 
 

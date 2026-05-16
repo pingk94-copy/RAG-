@@ -8,6 +8,7 @@ from rag.embeddings import create_embedding_model
 from rag.hybrid_retriever import HybridRetriever
 from rag.ingest import KnowledgeChunk, build_chunks
 from rag.keyword_retriever import BM25Retriever
+from rag.llm import create_llm_client_from_env
 from rag.qdrant_store import QdrantVectorStore
 from rag.rag_graph import RAGGraph
 from rag.reranker import SimpleReranker
@@ -38,7 +39,7 @@ class RAGService:
         self.vector_store_config = vector_store_config or {"provider": "memory"}
         self._chunks: list[KnowledgeChunk] = []
         self.reranker = SimpleReranker()
-        self.answer_generator = AnswerGenerator()
+        self.answer_generator = AnswerGenerator(llm_client=create_llm_client_from_env())
         self.safety_checker = SafetyChecker()
         self._reset_retriever()
 

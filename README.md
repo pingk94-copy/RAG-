@@ -1,6 +1,6 @@
 # RAG 智能问答
 
-这是一个按多轮迭代建设的 RAG 学习项目。当前处于第 11 轮：新增 LangGraph 风格的显式 RAG 编排流程。
+这是一个按多轮迭代建设的 RAG 学习项目。当前处于第 12 轮：新增 `.env` 配置和 OpenAI Responses API LLM 回答生成。
 
 ## 当前能力
 
@@ -22,6 +22,8 @@
 - 支持本地评估数据集和评估脚本
 - 支持安全校验：提示词注入、危险内网 URL
 - 支持图式编排：安全检查 -> 混合检索 -> Rerank -> 答案生成
+- 支持 OpenAI Responses API 生成自然语言答案
+- 未配置 API Key 时自动回退到本地抽取式回答
 - 支持返回答案和来源 chunk
 - 当没有检索到依据时拒答
 
@@ -58,6 +60,22 @@ service = RAGService(
     },
 )
 ```
+
+## LLM 配置
+
+复制 `.env.example` 为 `.env`，并填入自己的 Key：
+
+```powershell
+Copy-Item .env.example .env
+```
+
+```text
+OPENAI_API_KEY=你的 OpenAI API Key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+`.env` 已加入 `.gitignore`，不要把真实 Key 提交到仓库。未配置 `OPENAI_API_KEY` 时，系统会自动回退到本地抽取式回答。
 
 ## 当前评估指标
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from rag.document_loader import load_document
-from rag.ingest import build_chunks
+from rag.ingest import build_chunks, load_documents
 
 
 def test_load_txt_document_preserves_basic_metadata(tmp_path: Path):
@@ -40,3 +40,14 @@ def test_build_chunks_adds_metadata_from_document(tmp_path: Path):
     assert chunks[0].heading == "安装说明"
     assert chunks[0].chunk_id == 0
     assert "安装说明" in chunks[0].content or "接通电源" in chunks[0].content
+
+
+def test_load_documents_skips_failed_files_by_default(tmp_path: Path):
+    pdf_path = tmp_path / "broken.pdf"
+    pdf_path.write_text("not a real pdf", encoding="utf-8")
+    txt_path = tmp_path / "manual.txt"
+    txt_path.write_text("系统支持上传产品说明书。", encoding="utf-8")
+
+    documents = load_documents(tmp_path)
+
+    assert [document.name for document in documents] == ["manual.txt"]

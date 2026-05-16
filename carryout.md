@@ -355,3 +355,40 @@
 - 项目包装与交付优化
 - 完善架构图、README、简历项目描述和面试讲解稿
 - 增加运行截图或演示说明
+
+## 第 12 轮：真实 LLM 与 .env 配置
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 增加 `.env` 配置入口
+- 支持 OpenAI Responses API 生成答案
+- 没有 API Key 时保持本地回退能力
+- 避免真实 Key 被提交到仓库
+
+完成内容：
+
+- 新增 `.env.example`
+- 更新 `.gitignore`，忽略 `.env`
+- 新增 `rag/llm.py`
+- 实现 `OpenAIResponsesLLMClient`
+- 实现 `create_llm_client_from_env`
+- 更新 `AnswerGenerator`，支持可选 LLM 客户端
+- 更新 `RAGService`，启动时自动从 `.env` 加载 LLM 配置
+- 未配置 `OPENAI_API_KEY` 时自动回退到抽取式回答
+- 更新 `requirements.txt`，加入 `openai`
+- 新增 `tests/test_llm.py` 和 `tests/test_env_files.py`
+- 修复 `load_documents`：默认跳过当前环境无法解析的文件，避免未安装 PyMuPDF 时 PDF 阻塞 CLI
+
+验证结果：
+
+- `python -m pytest`：40 个测试通过
+- `python .\ask.py "系统支持上传什么？"`：无 Key 时回退到本地抽取式回答
+- `python .\eval\evaluate.py --dataset eval/eval_dataset.json`：评估通过
+
+下一轮计划：
+
+- 项目包装与交付优化
+- 完善 README、架构图、简历描述和面试讲解稿
+- 可选：配置真实 Key 后进行一次真实 LLM 联调
