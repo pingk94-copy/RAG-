@@ -1,6 +1,6 @@
 # RAG 智能问答
 
-这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 5 轮：在混合检索后加入 Rerank 精排、引用来源和低置信拒答。
+这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 6 轮：将 RAG 链路封装成服务对象，并提供 FastAPI 接口。
 
 ## 当前能力
 
@@ -16,6 +16,7 @@
 - 支持轻量 Rerank 精排
 - 支持引用来源输出
 - 支持低置信上下文拒答
+- 支持 FastAPI `/ingest` 和 `/ask` 接口
 - 支持返回答案和来源 chunk
 - 当没有检索到依据时拒答
 
@@ -25,6 +26,7 @@
 python -m pytest
 python .\ingest.py --chunk-size 50 --overlap 10
 python .\ask.py "系统支持上传什么？"
+uvicorn app.main:app --reload
 ```
 
 ## 迭代方向

@@ -157,3 +157,36 @@
 - 搭建 FastAPI 服务
 - 提供 `/ingest` 和 `/ask` 接口
 - 为后续 Streamlit 前端准备稳定 API
+
+## 第 6 轮：FastAPI 服务接口
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 将现有 RAG 链路封装成可复用服务对象
+- 搭建 FastAPI 应用
+- 提供文档入库和问答接口
+- 为下一轮 Streamlit 前端准备稳定 API
+
+完成内容：
+
+- 新增 `rag/service.py`，实现 `RAGService`
+- `RAGService` 统一封装 ingest、混合检索、rerank、answer generation
+- 新增 `app/main.py`，提供 FastAPI 应用
+- 新增 `/health` 健康检查接口
+- 新增 `/ingest` 接口，支持通过 JSON 提交文档内容
+- 新增 `/ask` 接口，返回答案、引用和来源片段
+- 更新 `ask.py`，复用 `RAGService`，避免命令行和 API 维护两套链路
+- 新增 `tests/test_api.py`，覆盖 API 入库、问答和无依据拒答
+
+验证结果：
+
+- `python -m pytest`：18 个测试通过
+- `python .\ask.py "系统支持上传什么？"`：成功返回答案、引用和来源
+
+下一轮计划：
+
+- 搭建 Streamlit 前端页面
+- 支持页面上传 / 输入文档内容
+- 支持页面提问、展示答案、引用和来源片段
