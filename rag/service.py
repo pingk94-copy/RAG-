@@ -10,6 +10,7 @@ from rag.ingest import KnowledgeChunk, build_chunks
 from rag.keyword_retriever import BM25Retriever
 from rag.qdrant_store import QdrantVectorStore
 from rag.reranker import SimpleReranker
+from rag.safety import SAFETY_REFUSAL, SafetyChecker
 from rag.vector_store import InMemoryVectorStore
 
 
@@ -46,6 +47,10 @@ class RAGService:
         return IngestSummary(documents=len(loaded_documents), chunks=len(chunks))
 
     def ask(self, question: str) -> GeneratedAnswer:
+        safety_decision = SafetyChecker().check_question(question)
+        if not safety_decision.allowed:
+            return GeneratedAnswer(answer=SAFETY_REFUSAL, citations=[], sources=[])
+
         retrieved = self._retriever.search(question, top_k=5)
         reranked = SimpleReranker().rerank(question, retrieved, top_k=3)
         return AnswerGenerator().generate(question, reranked)
