@@ -1,6 +1,6 @@
 # RAG 智能问答
 
-这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 3 轮：在文档解析和 metadata 基础上，加入可替换 embedding 接口与本地向量索引。
+这是一个按 8 轮迭代建设的 RAG 学习项目。当前处于第 4 轮：加入 BM25 关键词检索，并用 RRF 融合向量检索与关键词检索结果。
 
 ## 当前能力
 
@@ -10,7 +10,9 @@
 - 支持为 chunk 保留文件名、文档类型、页码、标题等 metadata
 - 支持本地 hashing embedding
 - 支持内存向量索引和余弦相似度检索
-- 支持基于关键词重叠的轻量检索
+- 支持 BM25 关键词检索
+- 支持向量检索 + BM25 的混合召回
+- 支持 RRF 融合排序
 - 支持返回答案和来源 chunk
 - 当没有检索到依据时拒答
 
@@ -24,4 +26,4 @@ python .\ask.py "系统支持上传什么？"
 
 ## 迭代方向
 
-后续会逐步加入 Qdrant、BM25、RRF、Rerank、FastAPI、Streamlit、RAGAS 和 LangGraph。
+后续会逐步加入 Qdrant、Rerank、FastAPI、Streamlit、RAGAS 和 LangGraph。

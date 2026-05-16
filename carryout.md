@@ -94,3 +94,33 @@
 - 引入 BM25 关键词检索
 - 实现向量检索 + BM25 的混合召回
 - 使用 RRF 融合两路检索结果
+
+## 第 4 轮：BM25 混合检索与 RRF 融合
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 增加 BM25 关键词检索能力
+- 将关键词检索与向量检索进行混合召回
+- 使用 RRF 融合两路检索排名
+- 将命令行问答切换到混合检索链路
+
+完成内容：
+
+- 新增 `rag/keyword_retriever.py`，实现轻量 BM25 检索器
+- 新增 `rag/hybrid_retriever.py`，实现 `HybridRetriever`
+- 新增 `reciprocal_rank_fusion`，融合向量检索和 BM25 检索排名
+- 更新 `ask.py`，实际问答流程改为 `vector + keyword -> RRF -> answer`
+- 新增 `tests/test_hybrid_retriever.py`，覆盖 BM25 精确型号命中、RRF 融合和混合检索
+
+验证结果：
+
+- `python -m pytest`：13 个测试通过
+- `python .\ask.py "系统支持上传什么？"`：成功返回答案，来源显示 `via=keyword,vector`
+
+下一轮计划：
+
+- 增加 Rerank 精排层
+- 设计统一 AnswerGenerator
+- 优化引用来源展示和无依据拒答阈值
