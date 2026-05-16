@@ -1,0 +1,38 @@
+[
+  {
+    "question": "系统支持上传什么？",
+    "documents": [
+      {
+        "name": "manual.txt",
+        "kind": "txt",
+        "content": "系统支持上传产品说明书、技术文档和常见问题文件。"
+      }
+    ],
+    "expected_keywords": ["产品说明书", "技术文档"],
+    "should_refuse": false
+  },
+  {
+    "question": "资料不足时系统应该怎么做？",
+    "documents": [
+      {
+        "name": "manual.txt",
+        "kind": "txt",
+        "content": "当资料中没有明确依据时，系统应该拒绝编造答案。"
+      }
+    ],
+    "expected_keywords": ["拒绝编造答案"],
+    "should_refuse": false
+  },
+  {
+    "question": "今天西安天气怎么样？",
+    "documents": [
+      {
+        "name": "manual.txt",
+        "kind": "txt",
+        "content": "系统支持上传产品说明书、技术文档和常见问题文件。"
+      }
+    ],
+    "expected_keywords": [],
+    "should_refuse": true
+  }
+]

@@ -223,3 +223,40 @@
 - 增加评估数据集和评估脚本
 - 统计回答是否命中参考答案关键词
 - 输出简单评估报告，为 RAGAS 接入打基础
+
+## 第 8 轮：评估数据集与质量闭环
+
+完成时间：2026-05-16
+
+本轮目标：
+
+- 增加本地评估数据集
+- 增加自动评估脚本
+- 统计关键词命中和拒答准确率
+- 为后续接入 RAGAS 打基础
+
+完成内容：
+
+- 新增 `eval/eval_dataset.json`，包含 3 条基础评估样例
+- 新增 `eval/evaluate.py`，支持读取数据集并运行 RAGService
+- 定义 `EvaluationCase`、`EvaluationResult`、`EvaluationReport`
+- 评估脚本输出 total、passed、keyword_hit_rate、refusal_accuracy
+- 新增 `tests/test_evaluation.py`，覆盖关键词命中和拒答评估
+- 更新 README，加入评估脚本运行命令和当前指标
+
+验证结果：
+
+- `python -m pytest`：22 个测试通过
+- `python .\eval\evaluate.py --dataset eval/eval_dataset.json`：
+  - `total=3`
+  - `passed=3`
+  - `keyword_hit_rate=1.00`
+  - `refusal_accuracy=1.00`
+
+下一轮计划：
+
+- 如果继续迭代，建议进入项目增强阶段：
+  - 增加 LangGraph 编排
+  - 增加安全校验
+  - 接入真实 embedding / Qdrant
+  - 扩展评估集并接入 RAGAS
