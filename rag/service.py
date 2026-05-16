@@ -9,8 +9,9 @@ from rag.hybrid_retriever import HybridRetriever
 from rag.ingest import KnowledgeChunk, build_chunks
 from rag.keyword_retriever import BM25Retriever
 from rag.qdrant_store import QdrantVectorStore
+from rag.rag_graph import RAGGraph
 from rag.reranker import SimpleReranker
-from rag.safety import SAFETY_REFUSAL, SafetyChecker
+from rag.safety import SafetyChecker
 from rag.vector_store import InMemoryVectorStore
 
 
@@ -36,6 +37,9 @@ class RAGService:
         self.embedding_config = embedding_config or {"provider": "hashing"}
         self.vector_store_config = vector_store_config or {"provider": "memory"}
         self._chunks: list[KnowledgeChunk] = []
+        self.reranker = SimpleReranker()
+        self.answer_generator = AnswerGenerator()
+        self.safety_checker = SafetyChecker()
         self._reset_retriever()
 
     def ingest_documents(self, documents: list[IngestedDocument | dict[str, str]]) -> IngestSummary:
@@ -47,13 +51,18 @@ class RAGService:
         return IngestSummary(documents=len(loaded_documents), chunks=len(chunks))
 
     def ask(self, question: str) -> GeneratedAnswer:
-        safety_decision = SafetyChecker().check_question(question)
-        if not safety_decision.allowed:
-            return GeneratedAnswer(answer=SAFETY_REFUSAL, citations=[], sources=[])
+        state = RAGGraph(
+            retriever=self.retriever,
+            reranker=self.reranker,
+            answer_generator=self.answer_generator,
+            safety_checker=self.safety_checker,
+        ).run(question)
+        assert state.answer is not None
+        return state.answer
 
-        retrieved = self._retriever.search(question, top_k=5)
-        reranked = SimpleReranker().rerank(question, retrieved, top_k=3)
-        return AnswerGenerator().generate(question, reranked)
+    @property
+    def retriever(self):
+        return self._retriever
 
     def _reset_retriever(self) -> None:
         embedding_model = create_embedding_model(self.embedding_config)
