@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import re
 
 from rag.chunker import chunk_text
+from rag.ingest import KnowledgeChunk
 
 
 @dataclass(frozen=True)
@@ -37,6 +38,20 @@ class SimpleRAG:
                     document_name=document_name,
                     chunk_id=chunk_id,
                     content=chunk,
+                    score=0.0,
+                )
+            )
+
+    def add_chunks(self, chunks: list[KnowledgeChunk]) -> None:
+        for chunk in chunks:
+            location = f"p{chunk.page_number}"
+            if chunk.heading:
+                location = f"{location} {chunk.heading}"
+            self._sources.append(
+                Source(
+                    document_name=chunk.document_name,
+                    chunk_id=chunk.chunk_id,
+                    content=f"[{location}]\n{chunk.content}",
                     score=0.0,
                 )
             )

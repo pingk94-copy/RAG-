@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from rag.ingest import build_chunks, load_documents
 from rag.simple_rag import SimpleRAG
 
 
@@ -16,12 +17,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    rag = SimpleRAG()
     docs_dir = Path(args.docs)
-    for path in sorted(docs_dir.glob("*")):
-        if path.suffix.lower() not in {".txt", ".md"}:
-            continue
-        rag.add_document(path.name, path.read_text(encoding="utf-8"))
+    documents = load_documents(docs_dir)
+    chunks = build_chunks(documents)
+
+    rag = SimpleRAG()
+    rag.add_chunks(chunks)
 
     result = rag.ask(args.question)
     print(result.answer)
